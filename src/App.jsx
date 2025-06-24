@@ -1,17 +1,17 @@
-import { BrowserRouter, Routes, Route } from "react-router";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AllPageLayout from "./layout/AllPageLayout";
-import MovieGrid from "./pages/LetterGlitch";
+import Home from "./pages/Home";
+
 function App() {
     return (
-        <>
-            <BrowserRouter>
-                <Routes>
-                    <Route path="/" element={<AllPageLayout />}>
-                        <Route path="" element={<MovieGrid />} />
-                    </Route>
-                </Routes>
-            </BrowserRouter>
-        </>
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<AllPageLayout />}>
+                    <Route index element={<Home />} />
+                </Route>
+            </Routes>
+        </BrowserRouter>
     );
 }
+
 export default App;
