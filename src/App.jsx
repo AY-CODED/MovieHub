@@ -1,13 +1,13 @@
 import { BrowserRouter, Routes, Route } from "react-router";
 import AllPageLayout from "./layout/AllPageLayout";
-import Home from "./pages/Home";
+import MovieGrid from "./pages/LetterGlitch";
 function App() {
     return (
         <>
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<AllPageLayout />}>
-                        <Route path="" element={<Home />} />
+                        <Route path="" element={<MovieGrid />} />
                     </Route>
                 </Routes>
             </BrowserRouter>
