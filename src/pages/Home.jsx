@@ -14,7 +14,7 @@ function Home() {
         try {
             // Step 1: Search by keyword
             const res = await fetch(
-                `https://www.omdbapi.com/?s=${searchTerm}&apikey=a9bae811`
+                `https://www.omdbapi.com/?s=${searchTerm}&apikey=d35e0a4f`
             );
             const data = await res.json();
 
@@ -23,7 +23,7 @@ function Home() {
                 const detailedMovies = await Promise.all(
                     data.Search.map(async (movie) => {
                         const resDetail = await fetch(
-                            `https://www.omdbapi.com/?i=${movie.imdbID}&apikey=YOUR_API_KEY`
+                            `https://www.omdbapi.com/?i=${movie.imdbID}&apikey=d35e0a4f`
                         );
                         return resDetail.json();
                     })
