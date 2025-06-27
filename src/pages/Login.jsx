@@ -71,6 +71,7 @@ function Login() {
                     <Link
                         to="/home"
                         className="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded font-semibold block text-center"
+                        
                     >
                         Login
                     </Link>

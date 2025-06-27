@@ -1,8 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Login from "./Login";
-import Home from "./Home";
-import { Link } from "react-router";
 
 function Signup() {
     const [username, setUsername] = useState("");
@@ -13,13 +10,25 @@ function Signup() {
     const handleSignup = (e) => {
         e.preventDefault();
 
+        // Validate
+        if (!username || !email || !password) {
+            alert("Please fill all fields.");
+            return;
+        }
+
+        // Check for existing user
+        const existingUser = localStorage.getItem("moviehubUser");
+        if (existingUser && JSON.parse(existingUser).email === email) {
+            alert("Email already registered. Please login.");
+            return;
+        }
+
+        // Save user
         const user = { username, email };
         localStorage.setItem("moviehubUser", JSON.stringify(user));
 
         alert("🎉 Signup successful!");
-
-        // Redirect to Home.jsx ("/" route)
-        navigate("/");
+        navigate("/home"); // go to Home page
     };
 
     return (
@@ -63,19 +72,19 @@ function Signup() {
                         />
                     </div>
 
-                    <Link
-                        to="/home"
-                        className="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded font-semibold block text-center"
+                    <button
+                        type="submit"
+                        className="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded font-semibold"
                     >
                         Sign Up
-                    </Link>
+                    </button>
                 </form>
 
                 <p className="text-center text-sm mt-6 text-gray-400">
                     Already have an account?{" "}
-                    <Link to="/login" className="text-blue-400 hover:underline">
+                    <a href="/login" className="text-blue-400 hover:underline">
                         Login
-                    </Link>
+                    </a>
                 </p>
             </div>
         </div>
