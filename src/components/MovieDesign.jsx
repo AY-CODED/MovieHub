@@ -1,21 +1,54 @@
-import { useState } from "react";
+// MovieDesign.jsx
+import { useState, useEffect } from "react";
+import LandingPage from "../pages/LandingPage";
+import Footer from "./Footer";
 
 function MovieDesign() {
     const [query, setQuery] = useState("");
     const [movie, setMovie] = useState(null);
     const [error, setError] = useState("");
+    const [suggestions, setSuggestions] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [hasSearched, setHasSearched] = useState(false);
 
-    const fetchMovie = async () => {
-        if (!query.trim()) {
+    const [watchlist, setWatchlist] = useState(() => {
+        const saved = localStorage.getItem("watchlist");
+        return saved ? JSON.parse(saved) : [];
+    });
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (query.trim()) {
+                fetch(`https://www.omdbapi.com/?s=${query}&apikey=c6c6e167`)
+                    .then((res) => res.json())
+                    .then((data) => {
+                        if (data.Response === "True") {
+                            setSuggestions(data.Search.slice(0, 6));
+                        } else {
+                            setSuggestions([]);
+                        }
+                    })
+                    .catch(() => setSuggestions([]));
+            } else {
+                setSuggestions([]);
+            }
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [query]);
+
+    const fetchMovie = async (title = query) => {
+        if (!title.trim()) {
             setError("Please enter a movie name.");
             setMovie(null);
             return;
         }
 
         try {
-            const res = await fetch(`https://www.omdbapi.com/?t=${query}&apikey=d35e0a4f`);
+            setLoading(true);
+            const res = await fetch(`https://www.omdbapi.com/?t=${title}&apikey=c6c6e167`);
             const data = await res.json();
-            console.log("API DATA:", data);
+            setHasSearched(true);
 
             if (data.Response === "True") {
                 setMovie(data);
@@ -24,43 +57,73 @@ function MovieDesign() {
                 setMovie(null);
                 setError("Movie not found.");
             }
-        } catch (err) {
+        } catch {
             setMovie(null);
             setError("Failed to fetch movie.");
+        } finally {
+            setLoading(false);
+            setSuggestions([]);
         }
+    };
+
+    const addToWatchlist = () => {
+        if (!movie) return;
+
+        const alreadyAdded = watchlist.some((item) => item.imdbID === movie.imdbID);
+        if (alreadyAdded) return alert("Movie already in watchlist!");
+
+        const updated = [...watchlist, movie];
+        setWatchlist(updated);
+        localStorage.setItem("watchlist", JSON.stringify(updated));
+        alert("✅ Added to Watchlist!");
     };
 
     return (
         <div className="min-h-screen bg-black text-white flex flex-col items-center p-6">
+            {!hasSearched && <LandingPage />}
 
-            {/* Welcome Glitch at the Top */}
-            <div className="relative text-4xl sm:text-5xl font-extrabold text-white glitch mb-10 mt-4">
-                <span aria-hidden="true">Welcome to MovieHub</span>
-                Welcome to MovieHub
-                <span aria-hidden="true">Welcome to MovieHub</span>
+            <div className="relative w-full max-w-md mb-4">
+                <div className="flex gap-2">
+                    <input
+                        type="text"
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder="Type a movie name..."
+                        className="flex-1 p-2 rounded text-black w-full"
+                    />
+                    <button
+                        onClick={() => fetchMovie()}
+                        className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700"
+                    >
+                        Search
+                    </button>
+                </div>
+
+                {suggestions.length > 0 && (
+                    <ul className="absolute z-10 bg-white text-black w-full rounded shadow mt-1 max-h-60 overflow-y-auto">
+                        {suggestions.map((sug) => (
+                            <li
+                                key={sug.imdbID}
+                                onClick={() => {
+                                    setQuery(sug.Title);
+                                    fetchMovie(sug.Title);
+                                    setSuggestions([]);
+                                }}
+                                className="p-2 hover:bg-gray-200 cursor-pointer border-b border-gray-100"
+                            >
+                                {sug.Title} ({sug.Year})
+                            </li>
+                        ))}
+                    </ul>
+                )}
             </div>
 
-            {/* Search Input */}
-            <div className="flex gap-2 mb-4 w-full max-w-md">
-                <input
-                    type="text"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Enter movie name..."
-                    className="flex-1 p-2 rounded text-black"
-                />
-                <button
-                    onClick={fetchMovie}
-                    className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700"
-                >
-                    Search
-                </button>
-            </div>
+            {loading && (
+                <div className="mb-4 border-4 border-blue-400 border-t-transparent w-10 h-10 rounded-full animate-spin"></div>
+            )}
 
-            {/* Error Message */}
             {error && <p className="text-red-500 mb-4">{error}</p>}
 
-            {/* Movie Info Display */}
             {movie && (
                 <div className="flex flex-wrap gap-4 bg-white text-black rounded-2xl p-4 max-w-xl shadow-lg">
                     <div>
@@ -76,58 +139,34 @@ function MovieDesign() {
                         <p><strong>Genre:</strong> {movie.Genre}</p>
                         <p><strong>IMDb Rating:</strong> {movie.imdbRating}</p>
                         <p><strong>Plot:</strong> {movie.Plot}</p>
+
+                        <button
+                            onClick={addToWatchlist}
+                            className="mt-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                        >
+                            Add to Watchlist
+                        </button>
                     </div>
                 </div>
             )}
 
-            {/* Glitch Animation Styles */}
-            <style>{`
-                .glitch {
-                    position: relative;
-                    animation: glitch 1s infinite;
-                }
-                .glitch span {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    opacity: 0.8;
-                }
-                .glitch span:nth-child(1) {
-                    animation: glitchTop 1s infinite;
-                    color: red;
-                }
-                .glitch span:nth-child(3) {
-                    animation: glitchBottom 1s infinite;
-                    color: blue;
-                }
-
-                @keyframes glitch {
-                    0% { transform: none; }
-                    20% { transform: skew(-0.5deg, -0.9deg); }
-                    40% { transform: skew(0.8deg, 0.2deg); }
-                    60% { transform: skew(-1deg, 0deg); }
-                    80% { transform: skew(0.4deg, -0.4deg); }
-                    100% { transform: none; }
-                }
-
-                @keyframes glitchTop {
-                    0% { transform: translate(0); }
-                    20% { transform: translate(-2px, -2px); }
-                    40% { transform: translate(-2px, 2px); }
-                    60% { transform: translate(2px, -2px); }
-                    80% { transform: translate(2px, 2px); }
-                    100% { transform: translate(0); }
-                }
-
-                @keyframes glitchBottom {
-                    0% { transform: translate(0); }
-                    20% { transform: translate(2px, 2px); }
-                    40% { transform: translate(2px, -2px); }
-                    60% { transform: translate(-2px, 2px); }
-                    80% { transform: translate(-2px, -2px); }
-                    100% { transform: translate(0); }
-                }
-            `}</style>
+            {watchlist.length > 0 && (
+                <div className="mt-10 w-full max-w-xl">
+                    <h2 className="text-2xl font-bold mb-4">🎞 Watchlist</h2>
+                    <div className="grid gap-4">
+                        {watchlist.map((item) => (
+                            <div key={item.imdbID} className="flex items-center gap-4 bg-white text-black p-2 rounded shadow">
+                                <img src={item.Poster !== "N/A" ? item.Poster : "https://via.placeholder.com/100"} alt={item.Title} className="h-20" />
+                                <div>
+                                    <h3 className="text-lg font-semibold">{item.Title}</h3>
+                                    <p className="text-sm text-gray-600">{item.Year}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+            <Footer />
         </div>
     );
 }

@@ -1,29 +1,30 @@
 import { useState } from "react";
 import Navbar from "../components/Navbar";
+import LandingPage from "./LandingPage"; // Add this
 
 function Home() {
     const [movies, setMovies] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [hasSearched, setHasSearched] = useState(false); // Track search state
 
     const handleSearch = async (searchTerm) => {
         setLoading(true);
         setError("");
         setMovies([]);
+        setHasSearched(true);
 
         try {
-            // Step 1: Search by keyword
             const res = await fetch(
-                `https://www.omdbapi.com/?s=${searchTerm}&apikey=d35e0a4f`
+                `https://www.omdbapi.com/?s=${searchTerm}&apikey=c6c6e167`
             );
             const data = await res.json();
 
             if (data.Response === "True") {
-                // Step 2: Fetch full details for each movie
                 const detailedMovies = await Promise.all(
                     data.Search.map(async (movie) => {
                         const resDetail = await fetch(
-                            `https://www.omdbapi.com/?i=${movie.imdbID}&apikey=d35e0a4f`
+                            `https://www.omdbapi.com/?i=${movie.imdbID}&apikey=c6c6e167`
                         );
                         return resDetail.json();
                     })
@@ -44,6 +45,8 @@ function Home() {
         <div className="bg-black min-h-screen text-white">
             <Navbar onSearch={handleSearch} />
 
+            {!hasSearched && <LandingPage />} {/* Show only before searching */}
+
             <div className="p-4 md:p-12">
                 {loading && <p>Loading...</p>}
                 {error && <p className="text-red-400">{error}</p>}
@@ -56,7 +59,11 @@ function Home() {
                                 className="bg-blue-950 rounded-xl p-4"
                             >
                                 <img
-                                    src={movie.Poster !== "N/A" ? movie.Poster : "/no-poster.png"}
+                                    src={
+                                        movie.Poster !== "N/A"
+                                            ? movie.Poster
+                                            : "/no-poster.png"
+                                    }
                                     alt={movie.Title}
                                     className="w-full h-[300px] object-cover rounded mb-3"
                                 />
