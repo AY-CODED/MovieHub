@@ -1,7 +1,9 @@
 import { Search } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Navbar({ onSearch }) {
+    const navigate = useNavigate();
     const [showSearch, setShowSearch] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [user, setUser] = useState(null);
@@ -32,13 +34,19 @@ function Navbar({ onSearch }) {
         }
     };
 
-    const toggleDropdown = () => {
-        setShowDropdown((prev) => !prev);
+    const goToLanding = () => {
+        navigate("/moviedesign"); // redirect to MovieDesign (LandingPage shows when !hasSearched)
     };
 
     return (
         <nav className="flex justify-between items-center p-4 bg-blue-950 text-white relative z-50">
-            <h1 className="font-bold text-2xl">🎬 MovieHub</h1>
+            {/* Logo */}
+            <h1
+                className="font-bold text-2xl cursor-pointer hover:text-blue-300"
+                onClick={goToLanding}
+            >
+                🎬 MovieHub
+            </h1>
 
             {/* Desktop Search */}
             <div className="hidden md:flex gap-2 items-center">
@@ -54,14 +62,14 @@ function Navbar({ onSearch }) {
                 </button>
             </div>
 
-            {/* Mobile Search + Profile */}
+            {/* Mobile Search Button */}
             <div className="md:hidden flex items-center gap-2">
                 <button onClick={() => setShowSearch(!showSearch)}>
                     <Search />
                 </button>
             </div>
 
-            {/* Mobile Search Box */}
+            {/* Mobile Search Dropdown */}
             {showSearch && (
                 <div className="absolute top-16 left-0 w-full bg-blue-950 p-4 md:hidden z-40">
                     <input
