@@ -16,7 +16,6 @@ function Navbar({ onSearch }) {
             setUser(JSON.parse(storedUser));
         }
 
-        // Close dropdown if clicked outside
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setShowDropdown(false);
@@ -34,8 +33,8 @@ function Navbar({ onSearch }) {
         }
     };
 
-    const goToLanding = () => {
-        navigate("/moviedesign"); // redirect to MovieDesign (LandingPage shows when !hasSearched)
+    const goToHome = () => {
+        navigate("/home"); // Navigate to Home page
     };
 
     return (
@@ -43,7 +42,7 @@ function Navbar({ onSearch }) {
             {/* Logo */}
             <h1
                 className="font-bold text-2xl cursor-pointer hover:text-blue-300"
-                onClick={goToLanding}
+                onClick={goToHome}
             >
                 🎬 MovieHub
             </h1>
