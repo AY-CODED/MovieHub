@@ -62,7 +62,7 @@ function Login() {
                             />
                             Remember me
                         </label>
-                        <a href="#" className="hover:underline text-blue-400">
+                        <a href="#" className="hover:underline text-blue-400">k
                             Forgot password?
                         </a>
                     </div>
