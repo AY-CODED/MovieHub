@@ -17,10 +17,7 @@ function Navbar({ onSearch }) {
         }
 
         const handleClickOutside = (event) => {
-            if (
-                dropdownRef.current &&
-                !dropdownRef.current.contains(event.target)
-            ) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setShowDropdown(false);
             }
         };
@@ -34,7 +31,7 @@ function Navbar({ onSearch }) {
     const handleSearch = () => {
         if (searchTerm.trim() !== "") {
             onSearch(searchTerm);
-            setShowMobileSearch(false); // Hide dropdown after search
+            setShowMobileSearch(false);
         }
     };
 
@@ -68,9 +65,9 @@ function Navbar({ onSearch }) {
                 🎬 MovieHub
             </h1>
 
-            {/* Right Section */}
+            {/* Right section */}
             <div className="flex items-center gap-4">
-                {/* Desktop Search */}
+                {/* Desktop search input */}
                 <div className="hidden md:flex items-center gap-2">
                     <input
                         type="search"
@@ -84,14 +81,14 @@ function Navbar({ onSearch }) {
                     </button>
                 </div>
 
-                {/* Mobile Search Icon */}
+                {/* Mobile search icon */}
                 <div className="md:hidden">
                     <button onClick={() => setShowMobileSearch(!showMobileSearch)}>
                         <Search />
                     </button>
                 </div>
 
-                {/* Profile Icon */}
+                {/* Profile icon and dropdown */}
                 {user && (
                     <div className="relative" ref={dropdownRef}>
                         <button onClick={() => setShowDropdown(!showDropdown)}>
@@ -102,7 +99,6 @@ function Navbar({ onSearch }) {
                             />
                         </button>
 
-                        {/* Dropdown */}
                         {showDropdown && (
                             <div className="absolute right-0 mt-2 w-44 bg-white text-black rounded shadow-lg py-2 z-50">
                                 <p className="px-4 py-2 font-semibold text-blue-950 border-b border-gray-200">
@@ -126,7 +122,7 @@ function Navbar({ onSearch }) {
                 )}
             </div>
 
-            {/* Mobile Search Dropdown (Full Width) */}
+            {/* Mobile search input below navbar */}
             {showMobileSearch && (
                 <div className="absolute top-16 left-0 w-full bg-blue-950 p-4 md:hidden z-40">
                     <input
