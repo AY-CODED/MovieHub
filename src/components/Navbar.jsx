@@ -1,6 +1,7 @@
 import { Search } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import profileImg from "/src/assets/person.jpg";
 
 function Navbar({ onSearch }) {
     const [searchTerm, setSearchTerm] = useState("");
@@ -93,7 +94,7 @@ function Navbar({ onSearch }) {
                     <div className="relative" ref={dropdownRef}>
                         <button onClick={() => setShowDropdown(!showDropdown)}>
                             <img
-                                src="/src/assets/person.jpg"
+                                src={profileImg}
                                 alt="Profile"
                                 className="w-9 h-9 rounded-full border-2 border-white hover:border-blue-300 object-cover"
                             />
